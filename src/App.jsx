@@ -8,6 +8,7 @@ import Notification from "./components/Notification/Notification";
 function App() {
   const [isReset, setIsReset] = useState(false);
   const [totalFeedback, setTotalFeedback] = useState(0);
+  const [positiveFeedback, setPositiveFeedback] = useState(0);
   const [val, setVal] = useState(() => {
     const localData = window.localStorage.getItem("rates");
     if (localData !== "undefined") {
@@ -19,10 +20,11 @@ function App() {
   useEffect(() => {
     window.localStorage.setItem("rates", JSON.stringify(val));
   }, [val]);
-  
+
   useEffect(() => {
     setTotalFeedback(val.good + val.neutral + val.bad);
-  }, [val]);
+    setPositiveFeedback(Math.round((val.good / totalFeedback) * 100));
+  }, [val, totalFeedback]);
 
   const updateFeedback = (feedbackType) => {
     if (feedbackType === "reset") {
@@ -41,7 +43,11 @@ function App() {
       {totalFeedback === 0 ? (
         <Notification total={totalFeedback} />
       ) : (
-        <Feedback reviews={val} total={totalFeedback} />
+        <Feedback
+          reviews={val}
+          total={totalFeedback}
+          positive={positiveFeedback}
+        />
       )}
     </>
   );
